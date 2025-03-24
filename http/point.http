@@ -1,2 +1,5 @@
 ### 포인트 조회
 GET localhost:8080/point/3
+
+### 포인트 충전/이용 내역 조회
+GET localhost:8080/point/3/histories
