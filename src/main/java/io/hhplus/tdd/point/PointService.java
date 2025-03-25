@@ -15,6 +15,7 @@ public class PointService {
 
     private final UserPointTable userPointTable;
     private final PointHistoryTable pointHistoryTable;
+    private final PointManager pointManager = PointManager.getInstance();
 
     public UserPoint getPoint(long userId) {
         return userPointTable.selectById(userId);
@@ -22,5 +23,9 @@ public class PointService {
 
     public List<PointHistory> getPointHistories(long userId) {
         return pointHistoryTable.selectAllByUserId(userId);
+    }
+
+    public UserPoint chargePoint(long userId, long amount) {
+        return null;
     }
 }
