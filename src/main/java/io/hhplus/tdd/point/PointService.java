@@ -15,6 +15,7 @@ public class PointService {
 
     private final UserPointTable userPointTable;
     private final PointHistoryTable pointHistoryTable;
+    private final PointManager pointManager = PointManager.getInstance();
 
     public UserPoint getPoint(long userId) {
         return userPointTable.selectById(userId);
@@ -22,5 +23,15 @@ public class PointService {
 
     public List<PointHistory> getPointHistories(long userId) {
         return pointHistoryTable.selectAllByUserId(userId);
+    }
+
+    public UserPoint chargePoint(long userId, long amount) {
+        UserPoint userPoint = userPointTable.selectById(userId);
+        long chargedPoint = pointManager.chargePoint(userPoint.point(), amount);
+
+        userPoint = userPointTable.insertOrUpdate(userId, chargedPoint);
+        pointHistoryTable.insert(userId, amount, TransactionType.CHARGE, userPoint.updateMillis());
+
+        return userPoint;
     }
 }
