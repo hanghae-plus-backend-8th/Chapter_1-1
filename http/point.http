@@ -9,3 +9,9 @@ PATCH localhost:8080/point/3/charge
 Content-Type: application/json
 
 10000
+
+### 포인트 사용
+PATCH localhost:8080/point/3/use
+Content-Type: application/json
+
+10000

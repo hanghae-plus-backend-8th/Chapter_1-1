@@ -36,6 +36,12 @@ public class PointService {
     }
 
     public UserPoint usePoint(long userId, long amount) {
-        return null;
+        UserPoint userPoint = userPointTable.selectById(userId);
+        long deductedPoint = pointManager.deductPoint(userPoint.point(), amount);
+
+        userPoint = userPointTable.insertOrUpdate(userId, deductedPoint);
+        pointHistoryTable.insert(userId, amount, TransactionType.USE, userPoint.updateMillis());
+
+        return userPoint;
     }
 }
