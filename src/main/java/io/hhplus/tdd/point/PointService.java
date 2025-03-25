@@ -3,29 +3,25 @@ package io.hhplus.tdd.point;
 import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Slf4j
-@Service
 @RequiredArgsConstructor
-public class PointService {
+public abstract class PointService {
 
-    private final UserPointTable userPointTable;
-    private final PointHistoryTable pointHistoryTable;
-    private final PointManager pointManager = PointManager.getInstance();
+    protected final UserPointTable userPointTable;
+    protected final PointHistoryTable pointHistoryTable;
+    protected final PointManager pointManager = PointManager.getInstance();
 
-    public UserPoint getPoint(long userId) {
+    UserPoint getPoint(long userId) {
         return userPointTable.selectById(userId);
     }
 
-    public List<PointHistory> getPointHistories(long userId) {
+    List<PointHistory> getPointHistories(long userId) {
         return pointHistoryTable.selectAllByUserId(userId);
     }
 
-    public UserPoint chargePoint(long userId, long amount) {
+    UserPoint chargePoint(long userId, long amount) {
         UserPoint userPoint = userPointTable.selectById(userId);
         long chargedPoint = pointManager.chargePoint(userPoint.point(), amount);
 
@@ -35,7 +31,7 @@ public class PointService {
         return userPoint;
     }
 
-    public UserPoint usePoint(long userId, long amount) {
+    UserPoint usePoint(long userId, long amount) {
         UserPoint userPoint = userPointTable.selectById(userId);
         long deductedPoint = pointManager.deductPoint(userPoint.point(), amount);
 
