@@ -20,4 +20,12 @@ public class PointManager {
         }
         return chargedPoint;
     }
+
+    public long deductPoint(long point, long amount) {
+        long deductedPoint = point - amount;
+        if (deductedPoint < 0) {
+            throw new IllegalArgumentException("잔고가 부족합니다.");
+        }
+        return deductedPoint;
+    }
 }

@@ -39,4 +39,31 @@ class PointManagerTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("포인트 한도 초과");
     }
+
+    @DisplayName("유저는 포인트를 사용할 수 있다.")
+    @Test
+    void deductPoint() {
+        // given
+        long userPoint = 2_000L;
+        long amount = 2_000L;
+
+        // when
+        long deductedPoint = pointManager.deductPoint(userPoint, amount);
+
+        // then
+        assertThat(deductedPoint).isZero();
+    }
+
+    @DisplayName("유저는 본인의 잔고 내에서만 포인트를 사용할 수 있다.")
+    @Test
+    void canNotDeductPointToMinus() {
+        // given
+        long userPoint = 2_000L;
+        long amount = 3_000L;
+
+        // when, then
+        assertThatThrownBy(() -> pointManager.deductPoint(userPoint, amount))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("잔고가 부족합니다.");
+    }
 }
