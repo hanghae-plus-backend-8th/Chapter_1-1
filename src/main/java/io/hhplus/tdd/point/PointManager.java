@@ -24,4 +24,15 @@ public class PointManager {
         }
         return chargedPoint;
     }
+
+    public long deductPoint(long point, long amount) {
+        long deductedPoint = point - amount;
+
+        if (amount <= 0) {
+            throw new IllegalArgumentException("차감할 포인트는 0 이상이어야 합니다.");
+        } else if (deductedPoint < 0) {
+            throw new IllegalArgumentException("잔고가 부족합니다.");
+        }
+        return deductedPoint;
+    }
 }
