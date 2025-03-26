@@ -1,5 +1,6 @@
 package io.hhplus.tdd.point;
 
+import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,6 +19,9 @@ class PointServiceIntegrationTest {
 
     @Autowired
     private UserPointTable userPointTable;
+
+    @Autowired
+    private PointHistoryTable pointHistoryTable;
 
     @Autowired
     private PointService pointService;
@@ -34,6 +39,20 @@ class PointServiceIntegrationTest {
         assertThat(userPoint).isNotNull()
                 .extracting("point")
                 .isEqualTo(0L);
+    }
+
+    @DisplayName("유저는 포인트 충전/이용 내역 조회를 할 수 있다.")
+    @Test
+    void getPointHistories() {
+        // given
+        long userId = 1L;
+
+        // when
+        List<PointHistory> pointHistories = pointHistoryTable.selectAllByUserId(userId);
+
+        // then
+        assertThat(pointHistories).isNotNull()
+                .isEmpty();
     }
 
     @DisplayName("같은 유저가 동시에 여러 번 포인트를 사용할 수 없다.")
