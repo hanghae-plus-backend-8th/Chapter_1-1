@@ -75,6 +75,25 @@ class PointServiceIntegrationTest {
         verify(pointHistoryTable, Mockito.times(1)).insert(pointHistory.userId(), pointHistory.amount(), pointHistory.type(), pointHistory.updateMillis());
     }
 
+    @DisplayName("포인트 사용 시, 이용 내역이 저장된다.")
+    @Test
+    void saveUsePointHistory() {
+        // given
+        long userId = 1L;
+        long chargeAmount = 50_000L;
+        long useAmount = 30_000L;
+
+        // when
+        pointService.chargePoint(userId, chargeAmount);
+        pointService.usePoint(userId, useAmount);
+        List<PointHistory> pointHistories = pointHistoryTable.selectAllByUserId(userId);
+        PointHistory pointHistory = pointHistories.get(pointHistories.size() - 1);
+
+        // then
+        verify(userPointTable, Mockito.times(1)).insertOrUpdate(userId, chargeAmount - useAmount);
+        verify(pointHistoryTable, Mockito.times(1)).insert(pointHistory.userId(), pointHistory.amount(), pointHistory.type(), pointHistory.updateMillis());
+    }
+
     @DisplayName("같은 유저가 동시에 여러 번 포인트를 사용할 수 없다.")
     @Test
     void deductPointsConcurrently() throws InterruptedException {
