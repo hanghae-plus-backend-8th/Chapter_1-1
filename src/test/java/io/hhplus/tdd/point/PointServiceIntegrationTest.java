@@ -4,23 +4,26 @@ import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class PointServiceIntegrationTest {
 
-    @Autowired
+    @SpyBean
     private UserPointTable userPointTable;
 
-    @Autowired
+    @SpyBean
     private PointHistoryTable pointHistoryTable;
 
     @Autowired
@@ -53,6 +56,23 @@ class PointServiceIntegrationTest {
         // then
         assertThat(pointHistories).isNotNull()
                 .isEmpty();
+    }
+
+    @DisplayName("포인트 충전 시, 충전 내역이 저장된다.")
+    @Test
+    void saveChargedPointHistory() {
+        // given
+        long userId = 1L;
+        long amount = 50_000L;
+
+        // when
+        UserPoint chargedPoint = pointService.chargePoint(userId, amount);
+        List<PointHistory> pointHistories = pointHistoryTable.selectAllByUserId(userId);
+        PointHistory pointHistory = pointHistories.get(pointHistories.size() - 1);
+
+        // then
+        verify(userPointTable, Mockito.times(1)).insertOrUpdate(userId, chargedPoint.point());
+        verify(pointHistoryTable, Mockito.times(1)).insert(pointHistory.userId(), pointHistory.amount(), pointHistory.type(), pointHistory.updateMillis());
     }
 
     @DisplayName("같은 유저가 동시에 여러 번 포인트를 사용할 수 없다.")
