@@ -1,5 +1,6 @@
 package io.hhplus.tdd.point;
 
+import io.hhplus.tdd.database.UserPointTable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PointServiceIntegrationTest {
 
     @Autowired
+    private UserPointTable userPointTable;
+
+    @Autowired
     private PointService pointService;
+
+    @DisplayName("유저는 포인트를 조회할 수 있다.")
+    @Test
+    void getPoint() {
+        // given
+        long userId = 1L;
+
+        // when
+        UserPoint userPoint = userPointTable.selectById(userId);
+
+        // then
+        assertThat(userPoint).isNotNull()
+                .extracting("point")
+                .isEqualTo(0L);
+    }
 
     @DisplayName("같은 유저가 동시에 여러 번 포인트를 사용할 수 없다.")
     @Test
